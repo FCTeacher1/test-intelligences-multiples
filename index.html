@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test des Intelligences Multiples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .header p {
+            color: #718096;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            transform: translateY(20px);
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .intelligence-type {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #2d3748;
+            margin-bottom: 25px;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .option.selected {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border-color: #4facfe;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: #4facfe;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .results h2 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .intelligence-result {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 15px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .intelligence-name {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .score-bar {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+        }
+
+        .score-high { background: linear-gradient(90deg, #48bb78, #38a169); }
+        .score-medium { background: linear-gradient(90deg, #ed8936, #dd6b20); }
+        .score-low { background: linear-gradient(90deg, #fc8181, #e53e3e); }
+
+        .score-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #4a5568;
+            margin-top: 5px;
+        }
+
+        .interpretation {
+            background: #ebf8ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 10px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .interpretation h4 {
+            color: #2b6cb0;
+            margin-bottom: 8px;
+        }
+
+        .interpretation p {
+            color: #2d3748;
+            line-height: 1.5;
+        }
+
+        .restart-btn {
+            margin-top: 30px;
+            width: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .class-analysis {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin-top: 30px;
+        }
+
+        .analysis-toggle {
+            background: linear-gradient(45deg, #38a169, #48bb78);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(56, 161, 105, 0.3);
+        }
+
+        .student-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .student-profile {
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        .class-stats {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: #f0fff4;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #38a169;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            background: linear-gradient(45deg, #805ad5, #9f7aea);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(128, 90, 213, 0.3);
+        }
+
+        .admin-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .admin-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .question-card {
+                padding: 20px 15px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Test des Intelligences Multiples</h1>
+            <p>Découvrez votre profil d'intelligence selon la théorie d'Howard Gardner</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span id="progressText">Question 1 / 32</span>
+        </div>
+
+        <div id="questionContainer" class="question-card">
+            <div class="intelligence-type" id="intelligenceType"></div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()">Précédent</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Suivant</button>
+            </div>
+        </div>
+
+        <div id="resultsContainer" class="results hidden">
+            <h2>Vos Résultats</h2>
+            
+            <!-- Demande du nom pour la collecte de données -->
+            <div id="nameRequest" style="margin-bottom: 20px; padding: 20px; background: #e6fffa; border-radius: 10px;">
+                <label for="studentName" style="display: block; margin-bottom: 10px; font-weight: 600;">
+                    Votre nom (optionnel, pour l'analyse de classe) :
+                </label>
+                <input type="text" id="studentName" placeholder="Ex: Marie Dupont" 
+                       style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; margin-bottom: 10px;">
+                <button class="btn btn-primary" onclick="saveResults()" style="width: auto;">
+                    Enregistrer mes résultats
+                </button>
+            </div>
+            
+            <div id="resultsContent"></div>
+            <button class="btn btn-primary restart-btn" onclick="restartTest()">Recommencer le test</button>
+        </div>
+
+        <!-- Section d'analyse de classe (pour l'enseignant) -->
+        <div class="admin-section">
+            <h3 class="admin-title">🎓 Analyse de classe (Enseignant)</h3>
+            <button class="analysis-toggle" onclick="toggleClassAnalysis()">
+                Voir l'analyse de classe
+            </button>
+            
+            <div id="classAnalysis" class="class-analysis hidden">
+                <h2>Analyse des intelligences de la classe</h2>
+                
+                <div class="export-buttons">
+                    <button class="btn-export" onclick="exportResults('csv')">📊 Exporter CSV</button>
+                    <button class="btn-export" onclick="exportResults('txt')">📄 Exporter Texte</button>
+                    <button class="btn-export" onclick="clearAllData()">🗑️ Vider les données</button>
+                </div>
+                
+                <div id="studentsList" class="student-list"></div>
+                <div id="classStats" class="class-stats"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Linguistique (1-4)
+            { type: "Linguistique", text: "J'aime écrire des textes, raconter des histoires ou rédiger des arguments.", category: 0 },
+            { type: "Linguistique", text: "J'apprends facilement en lisant ou en écoutant des explications verbales.", category: 0 },
+            { type: "Linguistique", text: "J'ai une bonne mémoire pour les mots, noms et définitions.", category: 0 },
+            { type: "Linguistique", text: "J'aime jouer avec les rimes, les devinettes ou écrire des poèmes.", category: 0 },
+            
+            // Logico-mathématique (5-8)
+            { type: "Logico-mathématique", text: "J'aime résoudre des énigmes, problèmes ou casse-têtes logiques.", category: 1 },
+            { type: "Logico-mathématique", text: "Je pense en termes de séquences, de cause à effet et d'abstraction.", category: 1 },
+            { type: "Logico-mathématique", text: "Je suis à l'aise avec les chiffres, les mesures et les graphiques.", category: 1 },
+            { type: "Logico-mathématique", text: "J'aime expérimenter, classer et analyser des données.", category: 1 },
+            
+            // Spatiale (9-12)
+            { type: "Spatiale (visuo-spatiale)", text: "Je visualise facilement des plans, cartes ou arrangements spatiaux.", category: 2 },
+            { type: "Spatiale (visuo-spatiale)", text: "Je suis bon pour dessiner, imaginer des images ou travailler avec des formes.", category: 2 },
+            { type: "Spatiale (visuo-spatiale)", text: "Je repère rapidement les détails visuels dans une image ou un lieu.", category: 2 },
+            { type: "Spatiale (visuo-spatiale)", text: "Je comprends bien les relations entre objets dans l'espace (maquettes, plans).", category: 2 },
+            
+            // Kinesthésique (13-16)
+            { type: "Kinesthésique (corporel)", text: "J'apprends mieux en bougeant, en manipulant des objets ou en pratiquant physiquement.", category: 3 },
+            { type: "Kinesthésique (corporel)", text: "J'ai une bonne coordination et j'excelle dans des activités manuelles ou sportives.", category: 3 },
+            { type: "Kinesthésique (corporel)", text: "Je comprends les idées en les mettant en pratique plutôt qu'en les lisant.", category: 3 },
+            { type: "Kinesthésique (corporel)", text: "J'utilise souvent des gestes pour expliquer ce que je pense.", category: 3 },
+            
+            // Musicale (17-20)
+            { type: "Musicale", text: "Je reconnais facilement des mélodies, des rythmes ou des tonalités.", category: 4 },
+            { type: "Musicale", text: "J'aime chanter, jouer d'un instrument ou créer des rythmes.", category: 4 },
+            { type: "Musicale", text: "La musique m'aide à me concentrer ou à mémoriser.", category: 4 },
+            { type: "Musicale", text: "Je remarque les variations sonores (rythme, timbre, hauteur).", category: 4 },
+            
+            // Interpersonnelle (21-24)
+            { type: "Interpersonnelle", text: "Je comprends rapidement ce que ressentent les autres et je m'adapte dans les relations.", category: 5 },
+            { type: "Interpersonnelle", text: "Les gens viennent me voir pour des conseils ou pour résoudre des conflits.", category: 5 },
+            { type: "Interpersonnelle", text: "J'aime travailler en groupe et je suis bon pour coordonner les autres.", category: 5 },
+            { type: "Interpersonnelle", text: "Je lis facilement les indices sociaux (ton de voix, posture, expression).", category: 5 },
+            
+            // Intrapersonnelle (25-28)
+            { type: "Intrapersonnelle", text: "Je suis conscient·e de mes émotions, forces et limites.", category: 6 },
+            { type: "Intrapersonnelle", text: "Je réfléchis souvent à mes buts, à mon identité et à mes choix.", category: 6 },
+            { type: "Intrapersonnelle", text: "Je peux m'auto-réguler (motivation, gestion du stress) sans aide extérieure.", category: 6 },
+            { type: "Intrapersonnelle", text: "J'apprends bien seul·e, en réfléchissant et en planifiant.", category: 6 },
+            
+            // Naturaliste (29-32)
+            { type: "Naturaliste", text: "J'ai une sensibilité particulière à la nature, aux plantes ou aux animaux.", category: 7 },
+            { type: "Naturaliste", text: "J'aime classer, observer et comparer des éléments naturels (insectes, végétaux…).", category: 7 },
+            { type: "Naturaliste", text: "Je repère facilement les changements dans l'environnement naturel.", category: 7 },
+            { type: "Naturaliste", text: "Je suis intéressé·e par les cycles naturels, l'écologie ou la biologie.", category: 7 }
+        ];
+
+        const intelligenceNames = [
+            "Linguistique",
+            "Logico-mathématique", 
+            "Spatiale",
+            "Kinesthésique",
+            "Musicale",
+            "Interpersonnelle",
+            "Intrapersonnelle",
+            "Naturaliste"
+        ];
+
+        const suggestions = [
+            "Écriture créative, débats, résumés, présentations orales",
+            "Problèmes, tableaux, projets expérimentaux, programmation", 
+            "Cartes, maquettes, infographies, design",
+            "Ateliers pratiques, démonstrations, jeux de rôle",
+            "Activités rythmées, analyser chansons, création sonore",
+            "Travaux de groupe, tutorat, médiation",
+            "Journal de bord, objectifs personnels, auto-évaluation",
+            "Sorties en nature, jardinage, projets sur la biodiversité"
+        ];
+
+        let currentQuestion = 0;
+        let answers = new Array(32).fill(null);
+        let classResults = JSON.parse(localStorage.getItem('classResults') || '[]');
+
+        // Fonctions de gestion des données de classe
+        function saveResults() {
+            const studentName = document.getElementById('studentName').value.trim() || `Élève ${classResults.length + 1}`;
+            const results = calculateResults();
+            
+            const studentData = {
+                name: studentName,
+                date: new Date().toLocaleDateString('fr-FR'),
+                scores: results,
+                answers: [...answers]
+            };
+            
+            // Vérifier si l'élève existe déjà et remplacer
+            const existingIndex = classResults.findIndex(student => student.name === studentName);
+            if (existingIndex >= 0) {
+                classResults[existingIndex] = studentData;
+            } else {
+                classResults.push(studentData);
+            }
+            
+            // Sauvegarder dans le stockage local
+            localStorage.setItem('classResults', JSON.stringify(classResults));
+            
+            alert(`✅ Résultats enregistrés pour ${studentName}! Total: ${classResults.length} élève(s)`);
+            document.getElementById('nameRequest').style.display = 'none';
+        }
+
+        function toggleClassAnalysis() {
+            const analysis = document.getElementById('classAnalysis');
+            const isHidden = analysis.classList.contains('hidden');
+            
+            if (isHidden) {
+                analysis.classList.remove('hidden');
+                updateClassAnalysis();
+                document.querySelector('.analysis-toggle').textContent = 'Masquer l\'analyse';
+            } else {
+                analysis.classList.add('hidden');
+                document.querySelector('.analysis-toggle').textContent = 'Voir l\'analyse de classe';
+            }
+        }
+
+        function updateClassAnalysis() {
+            if (classResults.length === 0) {
+                document.getElementById('studentsList').innerHTML = '<p>Aucun résultat enregistré pour le moment.</p>';
+                document.getElementById('classStats').innerHTML = '';
+                return;
+            }
+
+            // Liste des élèves
+            let studentsHtml = '<h3>Élèves ayant passé le test :</h3>';
+            classResults.forEach(student => {
+                const dominantIntelligence = getDominantIntelligence(student.scores);
+                studentsHtml += `
+                    <div class="student-item">
+                        <div>
+                            <div class="student-name">${student.name}</div>
+                            <div class="student-profile">Intelligence dominante: ${dominantIntelligence.name} (${dominantIntelligence.score}/12)</div>
+                        </div>
+                        <small>${student.date}</small>
+                    </div>
+                `;
+            });
+            document.getElementById('studentsList').innerHTML = studentsHtml;
+
+            // Statistiques de classe
+            const classStats = calculateClassStats();
+            let statsHtml = '<h3>Statistiques de la classe :</h3>';
+            
+            statsHtml += `
+                <div class="stat-item">
+                    <h4>📊 Vue d'ensemble</h4>
+                    <p><strong>Nombre d'élèves :</strong> ${classResults.length}</p>
+                    <p><strong>Intelligence la plus représentée :</strong> ${classStats.mostCommon.name} (${classStats.mostCommon.count} élèves)</p>
+                </div>
+            `;
+
+            statsHtml += '<div class="stat-item"><h4>🎯 Répartition par intelligence dominante :</h4>';
+            classStats.distribution.forEach(intel => {
+                const percentage = Math.round((intel.count / classResults.length) * 100);
+                statsHtml += `<p><strong>${intel.name}:</strong> ${intel.count} élèves (${percentage}%)</p>`;
+            });
+            statsHtml += '</div>';
+
+            statsHtml += '<div class="stat-item"><h4>📈 Moyennes de classe par intelligence :</h4>';
+            classStats.averages.forEach(avg => {
+                const level = avg.score >= 8 ? 'Forte' : avg.score >= 4 ? 'Moyenne' : 'Faible';
+                statsHtml += `<p><strong>${avg.name}:</strong> ${avg.score.toFixed(1)}/12 (${level})</p>`;
+            });
+            statsHtml += '</div>';
+
+            document.getElementById('classStats').innerHTML = statsHtml;
+        }
+
+        function getDominantIntelligence(scores) {
+            let maxScore = Math.max(...scores);
+            let maxIndex = scores.indexOf(maxScore);
+            return {
+                name: intelligenceNames[maxIndex],
+                score: maxScore
+            };
+        }
+
+        function calculateClassStats() {
+            // Calcul de la distribution des intelligences dominantes
+            const dominantCount = {};
+            intelligenceNames.forEach(name => dominantCount[name] = 0);
+
+            // Calcul des moyennes par intelligence
+            const totalScores = new Array(8).fill(0);
+            
+            classResults.forEach(student => {
+                const dominant = getDominantIntelligence(student.scores);
+                dominantCount[dominant.name]++;
+                
+                student.scores.forEach((score, index) => {
+                    totalScores[index] += score;
+                });
+            });
+
+            const averages = intelligenceNames.map((name, index) => ({
+                name: name,
+                score: totalScores[index] / classResults.length
+            })).sort((a, b) => b.score - a.score);
+
+            const distribution = Object.entries(dominantCount)
+                .map(([name, count]) => ({ name, count }))
+                .filter(item => item.count > 0)
+                .sort((a, b) => b.count - a.count);
+
+            return {
+                mostCommon: distribution[0] || { name: 'Aucune', count: 0 },
+                distribution: distribution,
+                averages: averages
+            };
+        }
+
+        function exportResults(format) {
+            if (classResults.length === 0) {
+                alert('Aucune donnée à exporter.');
+                return;
+            }
+
+            if (format === 'csv') {
+                exportCSV();
+            } else if (format === 'txt') {
+                exportTXT();
+            }
+        }
+
+        function exportCSV() {
+            let csv = 'Nom,Date,Linguistique,Logico-math,Spatiale,Kinesthésique,Musicale,Interpersonnelle,Intrapersonnelle,Naturaliste,Intelligence dominante\n';
+            
+            classResults.forEach(student => {
+                const dominant = getDominantIntelligence(student.scores);
+                csv += `"${student.name}","${student.date}",${student.scores.join(',')},${dominant.name}\n`;
+            });
+
+            downloadFile(csv, 'resultats-classe.csv', 'text/csv');
+        }
+
+        function exportTXT() {
+            let txt = `ANALYSE DES INTELLIGENCES MULTIPLES - CLASSE\n`;
+            txt += `Date: ${new Date().toLocaleDateString('fr-FR')}\n`;
+            txt += `Nombre d'élèves: ${classResults.length}\n\n`;
+
+            const stats = calculateClassStats();
+            
+            txt += `INTELLIGENCE LA PLUS REPRÉSENTÉE:\n${stats.mostCommon.name} (${stats.mostCommon.count} élèves)\n\n`;
+            
+            txt += `RÉPARTITION PAR INTELLIGENCE DOMINANTE:\n`;
+            stats.distribution.forEach(intel => {
+                const percentage = Math.round((intel.count / classResults.length) * 100);
+                txt += `- ${intel.name}: ${intel.count} élèves (${percentage}%)\n`;
+            });
+            
+            txt += `\nMOYENNES DE CLASSE:\n`;
+            stats.averages.forEach(avg => {
+                txt += `- ${avg.name}: ${avg.score.toFixed(1)}/12\n`;
+            });
+            
+            txt += `\nDÉTAIL PAR ÉLÈVE:\n`;
+            classResults.forEach(student => {
+                const dominant = getDominantIntelligence(student.scores);
+                txt += `\n${student.name} (${student.date}):\n`;
+                student.scores.forEach((score, index) => {
+                    txt += `  ${intelligenceNames[index]}: ${score}/12\n`;
+                });
+                txt += `  Intelligence dominante: ${dominant.name}\n`;
+            });
+
+            downloadFile(txt, 'analyse-classe.txt', 'text/plain');
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Êtes-vous sûr de vouloir supprimer tous les résultats de la classe ?')) {
+                classResults = [];
+                localStorage.removeItem('classResults');
+                updateClassAnalysis();
+                alert('✅ Toutes les données ont été supprimées.');
+            }
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('intelligenceType').textContent = question.type;
+            document.getElementById('questionText').textContent = question.text;
+            
+            const optionsHtml = `
+                <div class="option ${answers[currentQuestion] === 0 ? 'selected' : ''}" onclick="selectAnswer(0)">
+                    <input type="radio" name="q${currentQuestion}" value="0" ${answers[currentQuestion] === 0 ? 'checked' : ''}>
+                    <label>Jamais</label>
+                </div>
+                <div class="option ${answers[currentQuestion] === 1 ? 'selected' : ''}" onclick="selectAnswer(1)">
+                    <input type="radio" name="q${currentQuestion}" value="1" ${answers[currentQuestion] === 1 ? 'checked' : ''}>
+                    <label>Parfois</label>
+                </div>
+                <div class="option ${answers[currentQuestion] === 2 ? 'selected' : ''}" onclick="selectAnswer(2)">
+                    <input type="radio" name="q${currentQuestion}" value="2" ${answers[currentQuestion] === 2 ? 'checked' : ''}>
+                    <label>Souvent</label>
+                </div>
+                <div class="option ${answers[currentQuestion] === 3 ? 'selected' : ''}" onclick="selectAnswer(3)">
+                    <input type="radio" name="q${currentQuestion}" value="3" ${answers[currentQuestion] === 3 ? 'checked' : ''}>
+                    <label>Toujours</label>
+                </div>
+            `;
+            
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+            
+            // Update progress
+            const progress = ((currentQuestion + 1) / 32) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} / 32`;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = currentQuestion === 31 ? 'Voir les résultats' : 'Suivant';
+            document.getElementById('nextBtn').disabled = answers[currentQuestion] === null;
+        }
+
+        function selectAnswer(value) {
+            answers[currentQuestion] = value;
+            document.getElementById('nextBtn').disabled = false;
+            
+            // Update visual selection
+            document.querySelectorAll('.option').forEach((option, index) => {
+                option.classList.toggle('selected', index === value);
+                option.querySelector('input').checked = index === value;
+            });
+        }
+
+        function nextQuestion() {
+            if (answers[currentQuestion] === null) return;
+            
+            if (currentQuestion < 31) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function calculateResults() {
+            const results = new Array(8).fill(0);
+            
+            questions.forEach((question, index) => {
+                results[question.category] += answers[index] || 0;
+            });
+            
+            return results;
+        }
+
+        function getInterpretation(score) {
+            if (score >= 8) return { level: "Forte", description: "Intelligence probablement dominante/fortement utilisée", class: "score-high" };
+            if (score >= 4) return { level: "Moyenne", description: "L'intelligence est présente mais pas dominante", class: "score-medium" };
+            return { level: "Faible", description: "Peu d'indications que cette intelligence est utilisée souvent", class: "score-low" };
+        }
+
+        function showResults() {
+            const results = calculateResults();
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('resultsContainer').classList.remove('hidden');
+            
+            let resultsHtml = '';
+            
+            results.forEach((score, index) => {
+                const interpretation = getInterpretation(score);
+                const percentage = (score / 12) * 100;
+                
+                resultsHtml += `
+                    <div class="intelligence-result">
+                        <div class="intelligence-name">${intelligenceNames[index]}</div>
+                        <div class="score-bar">
+                            <div class="score-fill ${interpretation.class}" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="score-text">
+                            <span>${score}/12 - ${interpretation.level}</span>
+                            <span>${Math.round(percentage)}%</span>
+                        </div>
+                        <div class="interpretation">
+                            <h4>Interprétation :</h4>
+                            <p>${interpretation.description}</p>
+                            ${score >= 8 ? `<p><strong>Suggestions d'activités :</strong> ${suggestions[index]}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('resultsContent').innerHTML = resultsHtml;
+            
+            // Animate score bars
+            setTimeout(() => {
+                document.querySelectorAll('.score-fill').forEach(fill => {
+                    fill.style.width = fill.style.width;
+                });
+            }, 100);
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            answers = new Array(32).fill(null);
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('questionContainer').classList.remove('hidden');
+            document.getElementById('nameRequest').style.display = 'block';
+            displayQuestion();
+        }
+
+        // Initialisation au chargement
+        window.addEventListener('load', function() {
+            // Charger les données existantes
+            classResults = JSON.parse(localStorage.getItem('classResults') || '[]');
+            displayQuestion();
+        });
+    </script>
+</body>
+</html>
